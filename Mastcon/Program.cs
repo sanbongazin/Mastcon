@@ -22,8 +22,9 @@ namespace Mastcon
 			var tokens = ApplicaionManager.GetAccessTokenByCode(registeredApp, code).Result;
 
 			Console.WriteLine(tokens.AccessToken);
-			url = "https://qiitadon.com/web/getting-started";
-			//url = "https://pawoo.net/web/timelines/public";
+			var url1 = "https://qiitadon.com";
+			url = "https://streaming.qiitadon.com:4000";
+			//url = "https://pawoo.net/web/timelines/home";
 			Console.WriteLine("OAuthSuccess!");
 
 			var p = new Program();
@@ -37,9 +38,9 @@ namespace Mastcon
 				}
 				else if (answer == "t")
 				{
-					Console.WriteLine("Please Write to send Toot:");
+					Console.Write("Please Write to send Toot:");
 					var content = Console.ReadLine();
-					p.Toot(url,tokens.AccessToken,content);
+					p.Toot(url1,tokens.AccessToken,content);
 				}
 				else
 				{
@@ -52,23 +53,19 @@ namespace Mastcon
 		private void Read(string url, string AccessToken){
 			var client = new MastodonClient(url, AccessToken);
 
-			var data = client.GetObservablePublicTimeline().OfType<Status>();
-			var publicStream = client.GetObservablePublicTimeline()
-			                         .OfType<Status>()
-			                         .Subscribe(x => Console.WriteLine($@"{x.Account.UserName} 
-			                                                       Tooted: {x.Content}"));
-			
-			//var maxid = 10045138;
-			//var statuses = await client.GetRecentPublicTimeline(maxId: maxid);
-            //// do show some statuses
-            //statuses = await client.GetRecentPublicTimeline(sinceId: statuses.Links.Prev.Value);
-            //// do show next statuses
-
+			//var data = client.GetObservablePublicTimeline().OfType<Status>();
+			var statusDs = client.GetObservablePublicTimeline()
+			                     .OfType<Status>()
+                                 .Subscribe(x => Console.WriteLine($@"Tooted: {x.Content}"));
+			Console.WriteLine("Press Key then Finish");
+            Console.ReadKey();
+            statusDs.Dispose();
+			Console.WriteLine("Finish");         
 		}
 
 		private void Toot(string url, string AccessToken, string content){
 			var client = new MastodonClient(url, AccessToken);
-
+			client.PostNewStatus(status: content);
             
 		}
 		static void Main(string[] args)
