@@ -49,7 +49,7 @@ namespace Mastcon
           
 		}
 
-		private async Task Read(string url, string AccessToken){
+		private void Read(string url, string AccessToken){
 			var client = new MastodonClient(url, AccessToken);
 
 			var data = client.GetObservablePublicTimeline().OfType<Status>();
